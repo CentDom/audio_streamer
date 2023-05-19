@@ -93,8 +93,9 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
     self.eventSink = eventSink
 if let args = arguments as? [String: Any] {
     if let preferredSampleRate = args["sampleRate"] as? Int,
-       let preferredBufferSize = args["bufferSize"] as? Int {
-        startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize))
+       let preferredBufferSize = args["bufferSize"] as? Int,
+       let preferredOverlap = args["overlap"] as? Double {
+        startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize), overlapVal: preferredOverlap ?? 0.5)
     } else {
         // Handle the case where one or both arguments are missing or not of the expected type
         print("Invalid or missing arguments (bufferSize or sampleRate")
@@ -117,7 +118,7 @@ if let args = arguments as? [String: Any] {
     return nil
   }
 
-  func startRecording(sampleRate: Int?, bufferSize: UInt32?) {
+  func startRecording(sampleRate: Int?, bufferSize: UInt32?, overlapVal: Double?) {
     engine = AVAudioEngine()
 
     do {
@@ -134,12 +135,49 @@ if let args = arguments as? [String: Any] {
       let input = engine.inputNode
       let bus = 0
 
+      var previousAudioBuffer = [Double]()
+      var holderAudioBuffer = [Double]()
+      let overlap = 1.0 - overlapVal
+
+
       input.installTap(onBus: bus, bufferSize: bufferSize ?? 4096, format: input.inputFormat(forBus: bus)) {
         buffer, _ -> Void in
         let samples = buffer.floatChannelData?[0]
         // audio callback, samples in samples[0]...samples[buffer.frameLength-1]
-        let arr = Array(UnsafeBufferPointer(start: samples, count: Int(buffer.frameLength)))
-        self.emitValues(values: arr)
+        let audioBufferList = Array(UnsafeBufferPointer(start: samples, count: Int(buffer.frameLength)))
+        if overlap == 1.0 {
+             self.emitValues(values: audioBufferList)
+        } else {
+            if previousAudioBuffer.count == 0 {
+               previousAudioBuffer += audioBufferList
+               self.emitValues(values: audioBufferList)
+            }else{
+               holderAudioBuffer += previousAudioBuffer
+               holderAudioBuffer += audioBufferList
+
+               let startIndex = Int(floor(overlap * Double(audioBuffer.count)))
+               let width = audioBuffer.count
+               var endIndex = startIndex + width - 1
+
+               while startIndex < holderAudioBuffer.count {
+                  if holderAudioBuffer.count - startIndex > audioBuffer.count {
+                     self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
+                     startIndex += Int(floor(overlap * Double(audioBuffer.count)))
+                     endIndex = startIndex + width - 1
+                  }else if holderAudioBuffer.count - startIndex == audioBuffer.count {
+                     self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
+                     startIndex = holderAudioBuffer.count
+                     previousAudioBuffer.removeAll()
+                  }else if holderAudioBuffer.count - startIndex < audioBuffer.count {
+                     previousAudioBuffer = Array(holderAudioBuffer[startIndex..<holderAudioBuffer.count])
+                     startIndex = holderAudioBuffer.count
+                  }
+               }
+               holderAudioBuffer.removeAll()
+            }
+        }
+
+//         self.emitValues(values: audioBufferList)
       }
 
       try engine.start()
