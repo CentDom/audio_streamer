@@ -33,7 +33,7 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
     private var sampleRate = 44100 // standard value to initialize
     private var bufferSize = 6400 * 2 // / Magical number!
     private val maxAmplitude = 32767 // same as 2^15
-    private val overlapVal = 0.0
+    private var overlapVal = 0.0
     private val logTag = "AudioStreamerPlugin"
 
     // / Variables (i.e. will change value)
@@ -89,7 +89,7 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
         recording = true
         sampleRate = (arguments as Map<*, *>)["sampleRate"] as Int
         bufferSize = (arguments as Map<*, *>)["bufferSize"] as Int
-        overlapVal = (arguments as Map<*, *>)["overlap"] as Int
+        overlapVal = (arguments as Map<*, *>)["overlap"] as Double
 
         if (sampleRate < 4000 || sampleRate > 48000) {
             events!!.error(

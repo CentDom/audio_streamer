@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/stanleyndunwere/Development/Personal/AndroidProjects/custom_audio_streamer/example/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-in/values-in.xml",
+            "map": [
+                {
+                    "source": "/Users/stanleyndunwere/.gradle/caches/transforms-3/454ffbbabeccfb6d1d5e0c74afea87ff/transformed/core-1.6.0/res/values-in/values-in.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    }
+                }
+            ]
+        }
+    ]
+}
