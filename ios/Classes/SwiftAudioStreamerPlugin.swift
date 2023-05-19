@@ -155,20 +155,20 @@ if let args = arguments as? [String: Any] {
                holderAudioBuffer += previousAudioBuffer
                holderAudioBuffer += audioBufferList
 
-               let startIndex = Int(floor(overlap * Double(audioBuffer.count)))
-               let width = audioBuffer.count
+               let startIndex = Int(floor(overlap * Double(audioBufferList.count)))
+               let width = audioBufferList.count
                var endIndex = startIndex + width - 1
 
                while startIndex < holderAudioBuffer.count {
-                  if holderAudioBuffer.count - startIndex > audioBuffer.count {
+                  if holderAudioBuffer.count - startIndex > audioBufferList.count {
                      self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
-                     startIndex += Int(floor(overlap * Double(audioBuffer.count)))
+                     startIndex += Int(floor(overlap * Double(audioBufferList.count)))
                      endIndex = startIndex + width - 1
-                  }else if holderAudioBuffer.count - startIndex == audioBuffer.count {
+                  }else if holderAudioBuffer.count - startIndex == audioBufferList.count {
                      self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
                      startIndex = holderAudioBuffer.count
                      previousAudioBuffer.removeAll()
-                  }else if holderAudioBuffer.count - startIndex < audioBuffer.count {
+                  }else if holderAudioBuffer.count - startIndex < audioBufferList.count {
                      previousAudioBuffer = Array(holderAudioBuffer[startIndex..<holderAudioBuffer.count])
                      startIndex = holderAudioBuffer.count
                   }
