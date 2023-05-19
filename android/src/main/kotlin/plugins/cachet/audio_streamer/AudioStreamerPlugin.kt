@@ -31,8 +31,9 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
     // / Method channel for returning the sample rate.
     private val methodChannelName = "audio_streamer.methodChannel"
     private var sampleRate = 44100 // standard value to initialize
-    private var bufferSize = 6400 * 2; // / Magical number!
+    private var bufferSize = 6400 * 2 // / Magical number!
     private val maxAmplitude = 32767 // same as 2^15
+    private val overlapVal = 0.0
     private val logTag = "AudioStreamerPlugin"
 
     // / Variables (i.e. will change value)
@@ -88,6 +89,8 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
         recording = true
         sampleRate = (arguments as Map<*, *>)["sampleRate"] as Int
         bufferSize = (arguments as Map<*, *>)["bufferSize"] as Int
+        overlapVal = (arguments as Map<*, *>)["overlap"] as Int
+
         if (sampleRate < 4000 || sampleRate > 48000) {
             events!!.error(
                 "SampleRateError",
@@ -149,11 +152,12 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
                 audioRecord.startRecording()
                 var previousAudioBuffer = ArrayList<Double>()
                 var holderAudioBuffer = ArrayList<Double>()
-                val overlapPercent = 0.5
-                val overlap = 1 - overlapPercent
+                val overlap = 1.0 - overlapVal
+
                 /** overlap is weird, 75 percent overlap means copying 75 percent
                  * of the previous sample into the new one and incrementing by 100 -75%
                  * until all values in the new array are copied */
+                var count = 0;
                 while (recording) {
                     /** Read data into buffer  */
                     audioRecord.read(audioBuffer, 0, audioBuffer.size)
@@ -165,12 +169,16 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
                             audioBufferList.add(normalizedImpulse)
                         }
 
-                        if (overlap == 0.toDouble()) {
-                            eventSink!!.success(audioBufferList)
+                        if (overlap == 1.toDouble()) {
+//                            eventSink!!.success(audioBufferList)
+                            eventSink!!.success(count)
+                            count += 1
                         } else {
                             if (previousAudioBuffer.size == 0) {
                                 previousAudioBuffer.addAll(audioBufferList)
-                                eventSink!!.success(audioBufferList)
+//                              eventSink!!.success(audioBufferList)
+                                eventSink!!.success(count)
+                                count += 1
                             } else {
                                 holderAudioBuffer.addAll(previousAudioBuffer)
                                 holderAudioBuffer.addAll(audioBufferList)
@@ -181,19 +189,21 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
 
                                 while (startIndex < holderAudioBuffer.size) {
                                     if (holderAudioBuffer.size - startIndex > audioBuffer.size) {
-                                        eventSink!!.success(
-                                            holderAudioBuffer.slice(
-                                                startIndex..endIndex
-                                            )
-                                        )
+//                                        eventSink!!.success(
+//                                            holderAudioBuffer.slice(
+//                                                startIndex..endIndex
+//                                            )
+//                                        )
+                                        eventSink!!.success(count)
                                         startIndex += (floor(overlap * audioBuffer.size)).toInt()
                                         endIndex = startIndex + width - 1
                                     } else if (holderAudioBuffer.size - startIndex == audioBuffer.size) {
-                                        eventSink!!.success(
-                                            holderAudioBuffer.slice(
-                                                startIndex..endIndex
-                                            )
-                                        )
+//                                        eventSink!!.success(
+//                                            holderAudioBuffer.slice(
+//                                                startIndex..endIndex
+//                                            )
+//                                        )
+                                        eventSink!!.success(count)
                                         startIndex = holderAudioBuffer.size
                                         previousAudioBuffer.clear()
                                     } else if (holderAudioBuffer.size - startIndex < audioBuffer.size) {
@@ -203,7 +213,7 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
                                         startIndex = holderAudioBuffer.size
                                     }
                                 }
-
+                                count += 1
                                 holderAudioBuffer.clear()
                             }
                         }
