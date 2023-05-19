@@ -27,7 +27,6 @@ class AudioStreamer {
     var currSampleRate = await _sampleRateChannel.invokeMethod('getSampleRate');
     return currSampleRate;
   }
-
   /// Use EventChannel to receive audio stream from native
   Stream<List<double>> _makeAudioStream(Function handleErrorFunction, int sampleRate, int bufferSize) {
     if (_stream == null) {
