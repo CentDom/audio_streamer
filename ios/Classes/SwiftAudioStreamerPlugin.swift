@@ -10,6 +10,7 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
   var recording = false
   var preferredSampleRate: Int? = nil
   var preferredBufferSize = 4096
+  var preferredOverlap = 0.5;
 
   // Register plugin
   public static func register(with registrar: FlutterPluginRegistrar) {
@@ -98,13 +99,13 @@ if let args = arguments as? [String: Any] {
         startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize), overlapVal: preferredOverlap ?? 0.5)
     } else {
         // Handle the case where one or both arguments are missing or not of the expected type
-        print("Invalid or missing arguments (bufferSize or sampleRate")
-        startRecording(sampleRate: nil, bufferSize: nil)
+        print("Invalid or missing arguments (bufferSize or sampleRate or overlap")
+        startRecording(sampleRate: nil, bufferSize: nil, overlapVal: 0.0)
     }
 } else {
     // Handle the case where the arguments parameter is not a dictionary
     print("Arguments parameter is not a dictionary")
-    startRecording(sampleRate: nil, bufferSize: nil)
+    startRecording(sampleRate: nil, bufferSize: nil, overlapVal: 0.0)
 }
 
     return nil
