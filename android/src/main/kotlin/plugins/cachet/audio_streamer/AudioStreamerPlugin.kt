@@ -172,7 +172,6 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
                         if (overlap == 1.toDouble()) {
 //                            eventSink!!.success(audioBufferList)
                             eventSink!!.success(listOf(count))
-                            count += 1
                         } else {
                             if (previousAudioBuffer.size == 0) {
                                 previousAudioBuffer.addAll(audioBufferList)
