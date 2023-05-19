@@ -158,7 +158,7 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
                holderAudioBuffer += previousAudioBuffer
                holderAudioBuffer += audioBufferList
 
-               let startIndex = Int(floor(overlap * Double(audioBufferList.count)))
+               var startIndex = Int(floor(overlap * Double(audioBufferList.count)))
                let width = audioBufferList.count
                var endIndex = startIndex + width - 1
 
