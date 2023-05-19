@@ -28,13 +28,13 @@ class AudioStreamer {
     return currSampleRate;
   }
   /// Use EventChannel to receive audio stream from native
-  Stream<List<double>> _makeAudioStream(Function handleErrorFunction, int sampleRate, int bufferSize) {
+  Stream<List<double>> _makeAudioStream(Function handleErrorFunction, int sampleRate, int bufferSize, double? overlap ) {
     if (_stream == null) {
       _stream = _noiseEventChannel
           .receiveBroadcastStream({
             "sampleRate": sampleRate,
             "bufferSize": bufferSize,
-            "overlapVal": 0.5,
+            "overlap": overlap,
           })
           .handleError((error) {
             _isRecording = false;
@@ -62,7 +62,7 @@ class AudioStreamer {
   /// * [sampleRate] - Optional.
   ///   + If unspecified: Default sample rate of 44100 will be used.
   ///   + If specified: Audio streamer will use the specified sample rate, but this may not succeed on iOS.
-  Future<bool> start(Function onData, Function handleError, {sampleRate = 44100, bufferSize = 4096}) async {
+  Future<bool> start(Function onData, Function handleError, {sampleRate = 44100, bufferSize = 4096, overlap = 0.5}) async {
     if (_isRecording) {
       print('AudioStreamer: Already recording!');
       return _isRecording;
@@ -71,7 +71,7 @@ class AudioStreamer {
 
       if (granted) {
         try {
-          final stream = _makeAudioStream(handleError, sampleRate, bufferSize);
+          final stream = _makeAudioStream(handleError, sampleRate, bufferSize, overlap);
           _subscription = stream.listen(onData as void Function(List<double>)?);
           _isRecording = true;
         } catch (err) {
