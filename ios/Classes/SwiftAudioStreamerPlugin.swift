@@ -99,7 +99,7 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
             self.preferredBufferSize = preferredBufferSize
             self.preferredSampleRate = preferredSampleRate
             self.preferredOverlap = preferredOverlap
-            startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize), overlapVal: preferredOverlap ?? 0.5)
+            startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize), overlapVal: preferredOverlap)
         } else {
             // Handle the case where one or both arguments are missing or not of the expected type
             print("Invalid or missing arguments (bufferSize or sampleRate or overlap)")
@@ -121,7 +121,7 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
     return nil
   }
 
-  func startRecording(sampleRate: Int?, bufferSize: UInt32?, overlapVal: Double?) {
+  func startRecording(sampleRate: Int?, bufferSize: UInt32?, overlapVal: Double) {
     engine = AVAudioEngine()
 
     do {
