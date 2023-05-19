@@ -142,7 +142,7 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
       var holderAudioBuffer = [Float]()
       let overlap = 1.0 - overlapVal
 
-
+      var count = 0
       input.installTap(onBus: bus, bufferSize: bufferSize ?? 4096, format: input.inputFormat(forBus: bus)) {
         buffer, _ -> Void in
         let samples = buffer.floatChannelData?[0]
@@ -153,7 +153,10 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
         } else {
             if previousAudioBuffer.count == 0 {
                previousAudioBuffer += audioBufferList
-               self.emitValues(values: audioBufferList)
+//                self.emitValues(values: audioBufferList)
+               self.emitValues(values: [count])
+               count+=1
+
             }else{
                holderAudioBuffer += previousAudioBuffer
                holderAudioBuffer += audioBufferList
@@ -164,11 +167,13 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
 
                while startIndex < holderAudioBuffer.count {
                   if holderAudioBuffer.count - startIndex > audioBufferList.count {
-                     self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
+//                      self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
+                        self.emitValues(values: [count])
                      startIndex += Int(floor(overlap * Double(audioBufferList.count)))
                      endIndex = startIndex + width - 1
                   }else if holderAudioBuffer.count - startIndex == audioBufferList.count {
-                     self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
+//                      self.emitValues(values: Array(holderAudioBuffer[startIndex...endIndex]))
+                        self.emitValues(values: [count])
                      startIndex = holderAudioBuffer.count
                      previousAudioBuffer.removeAll()
                   }else if holderAudioBuffer.count - startIndex < audioBufferList.count {
@@ -176,6 +181,7 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
                      startIndex = holderAudioBuffer.count
                   }
                }
+               count+=1
                holderAudioBuffer.removeAll()
             }
         }
