@@ -64,7 +64,7 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
       }
       let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
       if options.contains(.shouldResume) {
-        startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize))
+        startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize), overlapVal: preferredOverlap ?? 0.5)
       }
 
     default:
@@ -93,9 +93,9 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
   ) -> FlutterError? {
     self.eventSink = eventSink
 if let args = arguments as? [String: Any] {
-    if let preferredSampleRate = args["sampleRate"] as? Int,
-       let preferredBufferSize = args["bufferSize"] as? Int,
-       let preferredOverlap = args["overlap"] as? Double {
+    if preferredSampleRate = args["sampleRate"] as? Int,
+       preferredBufferSize = args["bufferSize"] as? Int,
+       preferredOverlap = args["overlap"] as? Double {
         startRecording(sampleRate: preferredSampleRate, bufferSize: UInt32(preferredBufferSize), overlapVal: preferredOverlap ?? 0.5)
     } else {
         // Handle the case where one or both arguments are missing or not of the expected type
