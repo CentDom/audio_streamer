@@ -138,8 +138,8 @@ public class SwiftAudioStreamerPlugin: NSObject, FlutterPlugin, FlutterStreamHan
       let input = engine.inputNode
       let bus = 0
 
-      var previousAudioBuffer = [Double]()
-      var holderAudioBuffer = [Double]()
+      var previousAudioBuffer = [Float]()
+      var holderAudioBuffer = [Float]()
       let overlap = 1.0 - overlapVal
 
 
