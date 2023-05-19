@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="34cf1d2e-c93b-4ee8-a3f6-f50d8f861c8c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../ios/Classes/SwiftAudioStreamerPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/../../ios/Classes/SwiftAudioStreamerPlugin.swift" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
