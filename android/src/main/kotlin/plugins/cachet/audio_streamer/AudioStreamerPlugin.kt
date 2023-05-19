@@ -171,13 +171,13 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
 
                         if (overlap == 1.toDouble()) {
 //                            eventSink!!.success(audioBufferList)
-                            eventSink!!.success(count)
+                            eventSink!!.success(listOf(count))
                             count += 1
                         } else {
                             if (previousAudioBuffer.size == 0) {
                                 previousAudioBuffer.addAll(audioBufferList)
 //                              eventSink!!.success(audioBufferList)
-                                eventSink!!.success(count)
+                                eventSink!!.success(listOf(count))
                                 count += 1
                             } else {
                                 holderAudioBuffer.addAll(previousAudioBuffer)
@@ -194,7 +194,7 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
 //                                                startIndex..endIndex
 //                                            )
 //                                        )
-                                        eventSink!!.success(count)
+                                        eventSink!!.success(listOf(count))
                                         startIndex += (floor(overlap * audioBuffer.size)).toInt()
                                         endIndex = startIndex + width - 1
                                     } else if (holderAudioBuffer.size - startIndex == audioBuffer.size) {
@@ -203,7 +203,7 @@ class AudioStreamerPlugin : FlutterPlugin, RequestPermissionsResultListener,
 //                                                startIndex..endIndex
 //                                            )
 //                                        )
-                                        eventSink!!.success(count)
+                                        eventSink!!.success(listOf(count))
                                         startIndex = holderAudioBuffer.size
                                         previousAudioBuffer.clear()
                                     } else if (holderAudioBuffer.size - startIndex < audioBuffer.size) {
